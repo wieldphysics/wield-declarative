@@ -3,12 +3,6 @@
 """
 """
 
-    division,
-    print_function,
-    absolute_import,
-)
-#from builtins import object
-
 
 class SuperBase(object):
     """

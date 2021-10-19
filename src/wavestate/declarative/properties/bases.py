@@ -1,20 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 """
-
-    division,
-    print_function,
-    absolute_import,
-)
 #from builtins import object
 
 import abc
 
 from ..utilities import SuperBase
-from ..utilities.future_from_2 import with_metaclass
 
 
-class PropertyTransforming(with_metaclass(abc.ABCMeta, object)):
+class PropertyTransforming(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def construct(
         self,

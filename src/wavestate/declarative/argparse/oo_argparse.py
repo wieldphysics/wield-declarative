@@ -3,11 +3,6 @@
 TODO, needs big documentation
 """
 
-    division,
-    print_function,
-    absolute_import,
-)
-
 import sys
 import argparse
 import collections

@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 """
-
-    division,
-    print_function,
-    absolute_import,
-)
 import traceback as tb_mod
 import sys
 
@@ -13,9 +8,6 @@ from .bases import (
     PropertyAttributeError,
 )
 
-from ..utilities.future_from_2 import (
-    raise_from_with_traceback,
-)
 
 def raise_attrerror_from_property(prop, obj, exc):
     """

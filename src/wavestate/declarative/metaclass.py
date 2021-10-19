@@ -1,11 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 """
-
-#from builtins import object
+# from builtins import object
 import warnings
-from .utilities.future_from_2 import with_metaclass, str, unicode
 
 
 class AutodecorateMeta(type):
@@ -29,7 +25,7 @@ class AutodecorateMeta(type):
         return
 
 
-class Autodecorate(with_metaclass(AutodecorateMeta)):
+class Autodecorate(metaclass=AutodecorateMeta):
 
     ##this __init__ stub is needed or the init of 'object' is used!
     #def __init__(self, *args, **kwargs):
@@ -98,7 +94,7 @@ class AttrExpandingObject(Autodecorate):
 
     def __dir__(self):
         predir = dir(super(AttrExpandingObject, self))
-        predir.extend(k for k in self._cls_getsetattr_expansion.keys() if isinstance(k, (str, unicode)))
+        predir.extend(k for k in self._cls_getsetattr_expansion.keys() if isinstance(k, str))
         predir.sort()
         return predir
 
@@ -106,12 +102,10 @@ class AttrExpandingObject(Autodecorate):
 #separated because __setattr__ is so much more advanced and awful than __getattr__ overloading
 class GetSetAttrExpandingObject(AttrExpandingObject):
     def __setattr__(self, name, val):
-        assert(isinstance(name, (str, unicode)))
+        assert(isinstance(name, str))
         expand = self._cls_getsetattr_expansion.get(name, None)
         if expand is None:
             return super(GetSetAttrExpandingObject, self).__setattr__(name, val)
         else:
             return expand.__set__(self, self.__class__, val)
-
-
 

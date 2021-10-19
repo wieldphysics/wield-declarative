@@ -27,7 +27,6 @@ class ReprMixin(SuperBase):
     __slots__      = ()
     __repr_slots__ = ()
 
-    @repr_compat
     def __repr__(self):
         attr_names = []
         attr_names_set = set()

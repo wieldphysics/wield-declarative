@@ -2,11 +2,6 @@
 """
 """
 
-    division,
-    print_function,
-    absolute_import,
-)
-
 from .bases import (
     PropertyTransforming,
     HasDeclaritiveAttributes,
