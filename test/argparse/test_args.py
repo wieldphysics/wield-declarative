@@ -5,7 +5,7 @@ Test of the argparse library
 
 TODO: use automated features
 """
-from __future__ import (division, print_function, absolute_import)
+
 
 from declarative import (
     OverridableObject,

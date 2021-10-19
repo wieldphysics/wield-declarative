@@ -5,11 +5,9 @@
 # NOTICE: authors should document their contributions in concisely in NOTICE
 # with details inline in source files, comments, and docstrings.
 
-include LICENSES/*
-include NOTICE
-include README.md
-include MANIFEST.in
-include setup.cfg
-include setup.py
-
-recursive-include tools/ *.py
+[build-system]
+requires = [
+    "setuptools>=45",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"

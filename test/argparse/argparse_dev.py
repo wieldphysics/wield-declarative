@@ -3,7 +3,7 @@
 """
 Tests of the argparse api. Not really testing the declarative argparse library, but helpful for development of it.
 """
-from __future__ import print_function
+
 import argparse
 
 pp = argparse.ArgumentParser(
