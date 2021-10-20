@@ -1,4 +1,5 @@
 # Declarative Python
+[![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
 
 Collection of decorators and base classes to allow a declarative style of programming. The 
 underlying philosophy can be described as "init considered harmful". Instead, object attributes
