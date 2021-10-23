@@ -24,23 +24,17 @@ class RelayValueCoerced(RelayValueRejected):
 
 
 class RelayValue(ReprMixin):
-    """
-    """
-    __slots__ = ('callbacks', '_value')
-    __repr_slots__ = ('_value',)
+    """ """
+
+    __slots__ = ("callbacks", "_value")
+    __repr_slots__ = ("_value",)
 
     @staticmethod
     def validator(val):
         return val
 
-    def __init__(
-        self,
-        initial_value,
-        validator = None,
-        **kwargs
-    ):
-        """
-        """
+    def __init__(self, initial_value, validator=None, **kwargs):
+        """ """
         super(RelayValue, self).__init__(**kwargs)
         self.callbacks = {}
         if validator is not None:
@@ -51,14 +45,13 @@ class RelayValue(ReprMixin):
 
     def register(
         self,
-        key            = None,
-        callback       = None,
-        assumed_value  = _UNIQUE,
-        call_immediate = False,
-        remove         = False,
+        key=None,
+        callback=None,
+        assumed_value=_UNIQUE,
+        call_immediate=False,
+        remove=False,
     ):
-        """
-        """
+        """ """
         if key is None:
             key = callback
         if key is None:
@@ -77,7 +70,7 @@ class RelayValue(ReprMixin):
             del self.callbacks[key]
         return
 
-    def validator_assign(self, validator, remove = False):
+    def validator_assign(self, validator, remove=False):
         if not remove:
             if self.validator is not self.__class__.validator:
                 raise RuntimeError("Can not set multiple validators")
@@ -162,7 +155,7 @@ class RelayValue(ReprMixin):
 
     @mproperty
     def shadow(self):
-        return self.__class__(self.value, validator = self.validator)
+        return self.__class__(self.value, validator=self.validator)
 
     def shadow_from(self):
         self.put_valid(self.shadow._value)
@@ -171,5 +164,3 @@ class RelayValue(ReprMixin):
     def shadow_to(self):
         self.shadow.put_valid(self._value)
         return
-
-

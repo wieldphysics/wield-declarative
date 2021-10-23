@@ -64,11 +64,13 @@ from ._version import (
     __version__,
 )
 
+
 def first_non_none(*args):
     for a in args:
         if a is not None:
             return a
     return None
+
 
 FNN = first_non_none
 

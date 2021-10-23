@@ -24,6 +24,8 @@ import pytest
 
 oldprint = print
 print_test_list = []
+
+
 def print(*args):
     oldprint(*args)
     if len(args) == 1:
@@ -37,74 +39,74 @@ class TArgParse(ARG.OOArgParse, OverridableObject):
     Runs the argparse test setup
     """
 
-    @ARG.argument(['-a', '--abc'])
+    @ARG.argument(["-a", "--abc"])
     @mproperty
-    def atest(self, val = NOARG):
+    def atest(self, val=NOARG):
         """
         Test the documentation.
         """
         if val is NOARG:
-            val = 'default'
+            val = "default"
         return val
 
-    @ARG.argument(['-b', '--btest'], group = '__tgroup__')
+    @ARG.argument(["-b", "--btest"], group="__tgroup__")
     @mproperty
-    def btest(self, val = NOARG):
+    def btest(self, val=NOARG):
         """
         Test the documentation.
         """
         if val is NOARG:
-            val = 'default'
+            val = "default"
         return val
 
-    @ARG.argument(['-c', '--ctest'], group = '__tgroup_ME__')
+    @ARG.argument(["-c", "--ctest"], group="__tgroup_ME__")
     @mproperty
-    def ctest(self, val = NOARG):
+    def ctest(self, val=NOARG):
         """
         Test the documentation.
         """
         if val is NOARG:
-            val = 'default'
+            val = "default"
         return val
 
-    @ARG.argument(['-d', '--dtest'], group = '__tgroup_ME__')
+    @ARG.argument(["-d", "--dtest"], group="__tgroup_ME__")
     @mproperty
-    def dtest(self, val = NOARG):
+    def dtest(self, val=NOARG):
         """
         Test the documentation.
         """
         if val is NOARG:
-            val = 'default'
+            val = "default"
         return val
 
-    @ARG.store_true(['-e', '--etest'])
+    @ARG.store_true(["-e", "--etest"])
     @mproperty
-    def etest(self, val = NOARG):
+    def etest(self, val=NOARG):
         """
         Test the documentation.
         """
         if val is NOARG:
-            val = 'default'
+            val = "default"
         return val
 
-    @ARG.group(name = 'Test Group')
+    @ARG.group(name="Test Group")
     @mproperty
-    def __tgroup__(self, val = NOARG):
+    def __tgroup__(self, val=NOARG):
         """
         Group for testing
         """
 
     @ARG.group(
-        name = 'Test Group2',
-        mutually_exclusive = True,
+        name="Test Group2",
+        mutually_exclusive=True,
     )
     @mproperty
-    def __tgroup_ME__(self, val = NOARG):
+    def __tgroup_ME__(self, val=NOARG):
         """
         Group for testing Mutual Exclusivity
         """
 
-    @ARG.command(takes_arguments = True)
+    @ARG.command(takes_arguments=True)
     def run2(self, args):
         """
         Command Description
@@ -116,47 +118,41 @@ class TArgParse(ARG.OOArgParse, OverridableObject):
         """
         Print various arguments
         """
-        print ("atest: ", self.atest)
-        print ("btest: ", self.btest)
-        print ("ctest: ", self.ctest)
-        print ("dtest: ", self.dtest)
+        print("atest: ", self.atest)
+        print("btest: ", self.btest)
+        print("ctest: ", self.ctest)
+        print("dtest: ", self.dtest)
         return self
 
 
 def test_args():
     print_test_list[:] = []
-    TArgParse.__cls_argparse__(['-a', '1234'], _sys_exit = False)
-    assert(
-        print_test_list == [
-            ("atest: ", '1234'),
-            ("btest: ", 'default'),
-            ("ctest: ", 'default'),
-            ("dtest: ", 'default'),
-        ]
-    )
+    TArgParse.__cls_argparse__(["-a", "1234"], _sys_exit=False)
+    assert print_test_list == [
+        ("atest: ", "1234"),
+        ("btest: ", "default"),
+        ("ctest: ", "default"),
+        ("dtest: ", "default"),
+    ]
 
     print_test_list[:] = []
-    TArgParse.__cls_argparse__(['-a', '1234', 'run2'], _sys_exit = False)
-    assert(
-        print_test_list == [
-            ("run2!", []),
-        ]
-    )
+    TArgParse.__cls_argparse__(["-a", "1234", "run2"], _sys_exit=False)
+    assert print_test_list == [
+        ("run2!", []),
+    ]
 
     print_test_list[:] = []
-    TArgParse.__cls_argparse__(['-a', '1234', 'run2', 'a', '-b', 'c'], _sys_exit = False)
-    assert(
-        print_test_list == [
-            ("run2!", ['a', '-b', 'c']),
-        ]
-    )
+    TArgParse.__cls_argparse__(["-a", "1234", "run2", "a", "-b", "c"], _sys_exit=False)
+    assert print_test_list == [
+        ("run2!", ["a", "-b", "c"]),
+    ]
 
     print_test_list[:] = []
     with pytest.raises(SystemExit):
-        TArgParse.__cls_argparse__(['run_broke'], _sys_exit = False)
+        TArgParse.__cls_argparse__(["run_broke"], _sys_exit=False)
 
     return
 
-if __name__ == '__main__':
-    TArgParse.__cls_argparse__()
 
+if __name__ == "__main__":
+    TArgParse.__cls_argparse__()

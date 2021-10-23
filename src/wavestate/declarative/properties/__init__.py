@@ -38,7 +38,7 @@ from .memoized_adv_group import (
     group_dproperty,
 )
 
-#because this is the critical unique object
+# because this is the critical unique object
 from ..utilities.unique import (
     NOARG,
 )

@@ -16,4 +16,3 @@ from .unique import (
     NOARG,
     unique_generator,
 )
-

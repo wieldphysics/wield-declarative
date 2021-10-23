@@ -7,13 +7,10 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-#from builtins import object
+# from builtins import object
 
 
-from ..utilities.unique import (
-    NOARG,
-    unique_generator
-)
+from ..utilities.unique import NOARG, unique_generator
 
 
 from .bases import (
@@ -36,9 +33,9 @@ class MemoizedAdvDescriptor(object):
     def __init__(
         self,
         fgenerate,
-        name = None,
-        doc  = None,
-        declarative = None,
+        name=None,
+        doc=None,
+        declarative=None,
     ):
         if name is None:
             self.__name__ = fgenerate.__name__
@@ -63,7 +60,7 @@ class MemoizedAdvDescriptor(object):
         return
 
     def construct(self, fconstruct):
-        #TODO wrap the function call appropriately
+        # TODO wrap the function call appropriately
         self.fconstruct_narg = fconstruct
         self.fconstruct_warg = fconstruct
 
@@ -85,8 +82,8 @@ class MemoizedAdvDescriptor(object):
                 return self
             result = obj.__dict__.get(self.__name__, _UNIQUE_local)
             if result is _UNIQUE_local:
-                #bd = obj.__boot_dict__
-                bd = getattr(obj, '__boot_dict__', None)
+                # bd = obj.__boot_dict__
+                bd = getattr(obj, "__boot_dict__", None)
                 if bd is not None:
                     result = bd.pop(self.__name__, _UNIQUE_local)
                     if not bd:
@@ -96,12 +93,17 @@ class MemoizedAdvDescriptor(object):
                         result = self.fconstruct_narg(obj)
                     except TypeError as e:
                         raise_msg_from_property(
-                            ("Property attribute {name} of {orepr} accessed with no initial value. Needs an initial value, or"
-                             " to be declared with a default argument at file:"
-                             "\n{filename}"
-                             "\nline {lineno}."),
-                            AccessError, self, obj, e,
-                            if_from_file = __file__,
+                            (
+                                "Property attribute {name} of {orepr} accessed with no initial value. Needs an initial value, or"
+                                " to be declared with a default argument at file:"
+                                "\n{filename}"
+                                "\nline {lineno}."
+                            ),
+                            AccessError,
+                            self,
+                            obj,
+                            e,
+                            if_from_file=__file__,
                             **try_name_file_line(self.fconstruct_narg)
                         )
                         raise
@@ -112,12 +114,17 @@ class MemoizedAdvDescriptor(object):
                         result = self.fconstruct_warg(obj, result)
                     except TypeError as e:
                         raise_msg_from_property(
-                            ("Property attribute {name} of {orepr} accessed with no initial value. Needs an initial value, or"
-                             " to be declared with a default argument at file:"
-                             "\n{filename}"
-                             "\nline {lineno}."),
-                            AccessError, self, obj, e,
-                            if_from_file = __file__,
+                            (
+                                "Property attribute {name} of {orepr} accessed with no initial value. Needs an initial value, or"
+                                " to be declared with a default argument at file:"
+                                "\n{filename}"
+                                "\nline {lineno}."
+                            ),
+                            AccessError,
+                            self,
+                            obj,
+                            e,
+                            if_from_file=__file__,
                             **try_name_file_line(self.fconstruct_warg)
                         )
                         raise
@@ -129,8 +136,8 @@ class MemoizedAdvDescriptor(object):
 
                 if isinstance(result, PropertyTransforming):
                     result = result.construct(
-                        parent = obj,
-                        name = self.__name__,
+                        parent=obj,
+                        name=self.__name__,
                     )
 
                 obj.__dict__[self.__name__] = result
@@ -141,22 +148,27 @@ class MemoizedAdvDescriptor(object):
     def __set__(self, obj, value):
         oldvalue = obj.__dict__.get(self.__name__, _UNIQUE_local)
         if oldvalue is _UNIQUE_local:
-            bd = getattr(obj, '__boot_dict__', None)
+            bd = getattr(obj, "__boot_dict__", None)
             if bd is not None:
                 oldv = bd.setdefault(self.__name__, value)
                 if oldv is not value:
                     raise RuntimeError("Initial set on object must be unique")
             else:
-                obj.__boot_dict__ = {self.__name__ : value}
+                obj.__boot_dict__ = {self.__name__: value}
         else:
-            #the new value shows up in the object BEFORE the exchanger is called
+            # the new value shows up in the object BEFORE the exchanger is called
             if oldvalue is value:
                 return
             if __debug__:
                 import inspect
+
                 args, _, _, _ = inspect.getargspec(self.fget)
                 if len(args) < 3:
-                    raise RuntimeError("The memoized member ({0}) does not support value exchange".format(self.__name__))
+                    raise RuntimeError(
+                        "The memoized member ({0}) does not support value exchange".format(
+                            self.__name__
+                        )
+                    )
             obj.__dict__[self.__name__] = value
             try:
                 revalue = self.fsetter(obj, value, oldvalue)
@@ -173,12 +185,17 @@ class MemoizedAdvDescriptor(object):
         if oldvalue is _UNIQUE_local:
             raise InnerException("Value never initialized")
         else:
-            #the new value shows up in the object BEFORE the exchanger is called
+            # the new value shows up in the object BEFORE the exchanger is called
             if __debug__:
                 import inspect
+
                 args, _, _, _ = inspect.getargspec(self.fget)
                 if len(args) < 3:
-                    raise RuntimeError("The memoized member ({0}) does not support value exchange".format(self.__name__))
+                    raise RuntimeError(
+                        "The memoized member ({0}) does not support value exchange".format(
+                            self.__name__
+                        )
+                    )
             del obj.__dict__[self.__name__]
             try:
                 revalue = self.fdeleter(obj, oldvalue)
@@ -189,29 +206,16 @@ class MemoizedAdvDescriptor(object):
         return
 
 
-def mproperty_adv(
-        __func = None,
-        **kwargs
-):
+def mproperty_adv(__func=None, **kwargs):
     def wrap(func):
-        desc = MemoizedAdvDescriptor(
-            func, **kwargs
-        )
+        desc = MemoizedAdvDescriptor(func, **kwargs)
         return desc
+
     if __func is not None:
         return wrap(__func)
     else:
         return wrap
 
 
-def dproperty_adv(
-        __func = None,
-        declarative = True,
-        **kwargs
-):
-    return mproperty_adv(
-        __func = __func,
-        declarative = declarative,
-        **kwargs
-    )
-
+def dproperty_adv(__func=None, declarative=True, **kwargs):
+    return mproperty_adv(__func=__func, declarative=declarative, **kwargs)

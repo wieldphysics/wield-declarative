@@ -22,54 +22,59 @@ def raise_attrerror_from_property(prop, obj, exc):
     """
     _, _, traceback = sys.exc_info()
     try:
-        msg = str(exc) + " (within declarative.property named {0} of {1})".format(prop.__name__, repr(obj))
+        msg = str(exc) + " (within declarative.property named {0} of {1})".format(
+            prop.__name__, repr(obj)
+        )
     except Exception:
-        msg = str(exc) + " (within declarative.property named {0})".format(prop.__name__)
+        msg = str(exc) + " (within declarative.property named {0})".format(
+            prop.__name__
+        )
     raise_from_with_traceback(
         PropertyAttributeError(msg),
-        cause = exc,
-        traceback = traceback,
+        cause=exc,
+        traceback=traceback,
     )
 
 
 def try_name_file_line(func):
     """
-        Trashes current exception
+    Trashes current exception
     """
     d = dict()
     try:
-        d['filename'] = func.__code__.co_filename
+        d["filename"] = func.__code__.co_filename
     except Exception:
-        d['filename'] = '<unknown>'
+        d["filename"] = "<unknown>"
 
     try:
-        d['lineno'] = func.__code__.co_firstlineno
+        d["lineno"] = func.__code__.co_firstlineno
     except Exception:
-        d['lineno'] = '<unknown>'
+        d["lineno"] = "<unknown>"
     return d
 
 
-def raise_msg_from_property(msg, t_exc, prop, obj, old_exc = None, if_from_file = None, **kwargs):
-    """
-    """
+def raise_msg_from_property(
+    msg, t_exc, prop, obj, old_exc=None, if_from_file=None, **kwargs
+):
+    """ """
     _, _, traceback = sys.exc_info()
-    #print("FILE FROM: ", tb_mod.extract_tb(traceback)[-1][0])
-    #raise
-    if if_from_file is not None and (tb_mod.extract_tb(traceback)[-1][0] != if_from_file):
+    # print("FILE FROM: ", tb_mod.extract_tb(traceback)[-1][0])
+    # raise
+    if if_from_file is not None and (
+        tb_mod.extract_tb(traceback)[-1][0] != if_from_file
+    ):
         return False
-    d = dict(
-        name = prop.__name__
-    )
+    d = dict(name=prop.__name__)
     try:
-        d['orepr'] = repr(obj)
+        d["orepr"] = repr(obj)
     except Exception:
-        d['orepr'] = '<object of {0}>'.format(obj.__class__.__name__)
+        d["orepr"] = "<object of {0}>".format(obj.__class__.__name__)
     d.update(**kwargs)
 
     msg = msg.format(**d)
 
     raise_from_with_traceback(
         t_exc(msg),
-        cause = old_exc,
-        traceback = traceback,
+        cause=old_exc,
+        traceback=traceback,
     )

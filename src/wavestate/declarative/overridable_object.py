@@ -15,14 +15,13 @@ from .utilities.representations import SuperBase
 
 
 class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
-    """
-    """
+    """ """
+
     _overridable_object_save_kwargs = False
     _overridable_object_kwargs = None
 
     def _overridable_object_inject(self, **kwargs):
-        """
-        """
+        """ """
         kwargs_unmatched = {}
         for key, obj in list(kwargs.items()):
             try:
@@ -31,13 +30,7 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
                 kwargs_unmatched[key] = obj
                 continue
 
-            if isinstance(
-                parent_desc, (
-                    types.MethodType,
-                    staticmethod,
-                    classmethod
-                )
-            ):
+            if isinstance(parent_desc, (types.MethodType, staticmethod, classmethod)):
                 raise ValueError(
                     (
                         "Can only redefine non-method descriptors, {0} a method of class {1}"
@@ -55,8 +48,7 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
         return kwargs_unmatched
 
     def __init__(self, **kwargs):
-        """
-        """
+        """ """
         if self._overridable_object_save_kwargs:
             self._overridable_object_kwargs = kwargs
         kwargs_unmatched = self._overridable_object_inject(**kwargs)
@@ -67,14 +59,12 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
                 ).format(self.__class__.__name__, list(kwargs_unmatched.keys()))
             )
 
-        #now run the __mid_init__ before all of the declarative arguments trigger
+        # now run the __mid_init__ before all of the declarative arguments trigger
         self.__mid_init__()
         super(OverridableObject, self).__init__()
-        #print("OO: ", self)
+        # print("OO: ", self)
         return
 
     def __mid_init__(self):
-        """
-        """
+        """ """
         return
-

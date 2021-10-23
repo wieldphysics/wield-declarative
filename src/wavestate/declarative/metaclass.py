@@ -17,7 +17,7 @@ class AutodecorateMeta(type):
 
         ad_calls = []
         for base in cls.__mro__:
-            ad_call = base.__dict__.get('__mc_autodecorators__', None)
+            ad_call = base.__dict__.get("__mc_autodecorators__", None)
             if ad_call is not None:
                 ad_calls.append(ad_call)
 
@@ -28,14 +28,16 @@ class AutodecorateMeta(type):
         for deco in decorators:
             cls2 = deco(cls)
             if cls2 is not cls:
-                raise RuntimeError("Autodecorators cannot actually replace object, modification only")
+                raise RuntimeError(
+                    "Autodecorators cannot actually replace object, modification only"
+                )
         return
 
 
 class Autodecorate(metaclass=AutodecorateMeta):
 
     ##this __init__ stub is needed or the init of 'object' is used!
-    #def __init__(self, *args, **kwargs):
+    # def __init__(self, *args, **kwargs):
     #    super(Autodecorate, self).__init__(*args, **kwargs)
 
     @classmethod
@@ -72,10 +74,11 @@ class AttrExpandingObject(Autodecorate):
         return cls
 
     if __debug__:
+
         def __init__(self, *args, **kwargs):
             if self._cls_getsetattr_expansion_called is not self.__class__:
                 self._attributes_expand_units()
-                warnings.warn("Need to add class decorator \"class_expand\"")
+                warnings.warn('Need to add class decorator "class_expand"')
             super(AttrExpandingObject, self).__init__(*args, **kwargs)
 
     def _overridable_object_inject(self, **kwargs):
@@ -101,18 +104,19 @@ class AttrExpandingObject(Autodecorate):
 
     def __dir__(self):
         predir = dir(super(AttrExpandingObject, self))
-        predir.extend(k for k in self._cls_getsetattr_expansion.keys() if isinstance(k, str))
+        predir.extend(
+            k for k in self._cls_getsetattr_expansion.keys() if isinstance(k, str)
+        )
         predir.sort()
         return predir
 
 
-#separated because __setattr__ is so much more advanced and awful than __getattr__ overloading
+# separated because __setattr__ is so much more advanced and awful than __getattr__ overloading
 class GetSetAttrExpandingObject(AttrExpandingObject):
     def __setattr__(self, name, val):
-        assert(isinstance(name, str))
+        assert isinstance(name, str)
         expand = self._cls_getsetattr_expansion.get(name, None)
         if expand is None:
             return super(GetSetAttrExpandingObject, self).__setattr__(name, val)
         else:
             return expand.__set__(self, self.__class__, val)
-

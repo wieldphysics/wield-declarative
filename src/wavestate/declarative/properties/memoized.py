@@ -7,15 +7,12 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-#from builtins import object
+# from builtins import object
 
 
 from functools import partial
 
-from ..utilities.unique import (
-    NOARG,
-    unique_generator
-)
+from ..utilities.unique import NOARG, unique_generator
 
 from .utilities import (
     raise_attrerror_from_property,
@@ -40,6 +37,7 @@ class ClassMemoizedDescriptor(object):
     """
     Works like a combination of :obj:`property` and :obj:`classmethod` as well as :obj:`~.memoized_property`
     """
+
     def __init__(self, fget, doc=None):
         self.fget = fget
         self.__doc__ = doc or fget.__doc__
@@ -61,6 +59,7 @@ class MemoizedDescriptor(object):
     wraps a member function just as :obj:`property` but saves its value after evaluation
     (and is thus only evaluated once)
     """
+
     _declarative_instantiation = False
     transforming = True
     simple_delete = False
@@ -68,12 +67,12 @@ class MemoizedDescriptor(object):
     def __init__(
         self,
         fget,
-        name = None,
-        doc = None,
-        declarative = None,
-        transforming = None,
-        simple_delete = False,
-        original_callname = None,
+        name=None,
+        doc=None,
+        declarative=None,
+        transforming=None,
+        simple_delete=False,
+        original_callname=None,
     ):
         self.fget = fget
         if name is None:
@@ -101,8 +100,8 @@ class MemoizedDescriptor(object):
             return self
         result = obj.__dict__.get(self.__name__, _UNIQUE_local)
         if result is _UNIQUE_local:
-            #bd = obj.__boot_dict__
-            bd = getattr(obj, '__boot_dict__', None)
+            # bd = obj.__boot_dict__
+            bd = getattr(obj, "__boot_dict__", None)
             if bd is not None:
                 result = bd.pop(self.__name__, _UNIQUE_local)
                 if not bd:
@@ -112,12 +111,17 @@ class MemoizedDescriptor(object):
                     result = self.fget(obj)
                 except TypeError as e:
                     raise_msg_from_property(
-                        ("Property attribute {name} of {orepr} accessed with no initial value. Needs an initial value, or"
-                         " to be declared with a default argument at file:"
-                         "\n{filename}"
-                         "\nline {lineno}."),
-                        AccessError, self, obj, e,
-                        if_from_file = __file__,
+                        (
+                            "Property attribute {name} of {orepr} accessed with no initial value. Needs an initial value, or"
+                            " to be declared with a default argument at file:"
+                            "\n{filename}"
+                            "\nline {lineno}."
+                        ),
+                        AccessError,
+                        self,
+                        obj,
+                        e,
+                        if_from_file=__file__,
                         **try_name_file_line(self.fget)
                     )
                     raise
@@ -128,12 +132,17 @@ class MemoizedDescriptor(object):
                     result = self.fget(obj, result)
                 except TypeError as e:
                     raise_msg_from_property(
-                        ("Property attribute {name} of {orepr} accessed with an initial value. Needs no initial value, or"
-                         "to be declared taking an argument at file:"
-                         "\n{filename}"
-                         "\nline {lineno}."),
-                        AccessError, self, obj, e,
-                        if_from_file = __file__,
+                        (
+                            "Property attribute {name} of {orepr} accessed with an initial value. Needs no initial value, or"
+                            "to be declared taking an argument at file:"
+                            "\n{filename}"
+                            "\nline {lineno}."
+                        ),
+                        AccessError,
+                        self,
+                        obj,
+                        e,
+                        if_from_file=__file__,
                         **try_name_file_line(self.fget)
                     )
                     raise
@@ -147,41 +156,48 @@ class MemoizedDescriptor(object):
             if self.transforming and isinstance(result, PropertyTransforming):
                 try:
                     result = result.construct(
-                        parent = obj,
-                        name = self.__name__,
+                        parent=obj,
+                        name=self.__name__,
                     )
                 except Exception as e:
                     raise
-                    raise_msg_from_property((
-                        "Property attribute {name} of {orepr} failed constructing a Transforming object"),
-                        RuntimeError, self, obj, e,
+                    raise_msg_from_property(
+                        (
+                            "Property attribute {name} of {orepr} failed constructing a Transforming object"
+                        ),
+                        RuntimeError,
+                        self,
+                        obj,
+                        e,
                     )
 
-            #print("SET Value for attr ({0}) in {1}".format(self.__name__, id(obj)))
+            # print("SET Value for attr ({0}) in {1}".format(self.__name__, id(obj)))
             obj.__dict__[self.__name__] = result
         return result
 
     def __set__(self, obj, value):
         oldvalue = obj.__dict__.get(self.__name__, _UNIQUE_local)
         if oldvalue is _UNIQUE_local:
-            bd = getattr(obj, '__boot_dict__', None)
+            bd = getattr(obj, "__boot_dict__", None)
             if bd is not None:
                 oldv = bd.setdefault(self.__name__, value)
                 if oldv is not value:
                     d = dict(
-                        name = self.__name__,
+                        name=self.__name__,
                     )
                     try:
-                        d['orepr'] = repr(obj)
+                        d["orepr"] = repr(obj)
                     except Exception:
-                        d['orepr'] = '<object of {0}>'.format(obj.__class__.__name__)
+                        d["orepr"] = "<object of {0}>".format(obj.__class__.__name__)
                     raise RuntimeError(
-                        "Initial set for attribute {name} on object {orepr} must be unique".format(**d)
+                        "Initial set for attribute {name} on object {orepr} must be unique".format(
+                            **d
+                        )
                     )
             else:
-                obj.__boot_dict__ = {self.__name__ : value}
+                obj.__boot_dict__ = {self.__name__: value}
         else:
-            #the new value shows up in the object BEFORE the exchanger is called
+            # the new value shows up in the object BEFORE the exchanger is called
             if oldvalue is value:
                 return
             obj.__dict__[self.__name__] = value
@@ -189,12 +205,17 @@ class MemoizedDescriptor(object):
                 revalue = self.fget(obj, value, oldvalue)
             except TypeError as e:
                 raise_msg_from_property(
-                    ("Property attribute {name} of {orepr} set, replacing an initial value with a new. Either setting not allowed, or"
-                     "must be declared taking 2 arguments at file:"
-                     "\n{filename}"
-                     "\nline {lineno}."),
-                    AccessError, self, obj, e,
-                    if_from_file = __file__,
+                    (
+                        "Property attribute {name} of {orepr} set, replacing an initial value with a new. Either setting not allowed, or"
+                        "must be declared taking 2 arguments at file:"
+                        "\n{filename}"
+                        "\nline {lineno}."
+                    ),
+                    AccessError,
+                    self,
+                    obj,
+                    e,
+                    if_from_file=__file__,
                     **try_name_file_line(self.fget)
                 )
                 raise
@@ -207,23 +228,32 @@ class MemoizedDescriptor(object):
     def __delete__(self, obj):
         oldvalue = obj.__dict__.get(self.__name__, _UNIQUE_local)
         if oldvalue is _UNIQUE_local:
-            raise InnerException("Value for attr ({0}) in {1}({2}) never initialized before delete".format(self.__name__, obj, id(obj)))
+            raise InnerException(
+                "Value for attr ({0}) in {1}({2}) never initialized before delete".format(
+                    self.__name__, obj, id(obj)
+                )
+            )
         else:
             if self.simple_delete:
                 del obj.__dict__[self.__name__]
             else:
-                #the new value shows up in the object BEFORE the exchanger is called
+                # the new value shows up in the object BEFORE the exchanger is called
                 del obj.__dict__[self.__name__]
                 try:
                     revalue = self.fget(obj, NOARG, oldvalue)
                 except TypeError as e:
                     raise_msg_from_property(
-                        ("Property attribute {name} of {orepr} deleted, replacing an initial value with NOARG. Either deleting not allowed, or"
-                         "must be declared taking 2 arguments at file:"
-                         "\n{filename}"
-                         "\nline {lineno}."),
-                        AccessError, self, obj, e,
-                        if_from_file = __file__,
+                        (
+                            "Property attribute {name} of {orepr} deleted, replacing an initial value with NOARG. Either deleting not allowed, or"
+                            "must be declared taking 2 arguments at file:"
+                            "\n{filename}"
+                            "\nline {lineno}."
+                        ),
+                        AccessError,
+                        self,
+                        obj,
+                        e,
+                        if_from_file=__file__,
                         **try_name_file_line(self.fget)
                     )
                     raise
@@ -237,16 +267,17 @@ class MemoizedDescriptorFNoSet(object):
     wraps a member function just as :obj:`property` but saves its value after evaluation
     (and is thus only evaluated once)
     """
+
     _declarative_instantiation = False
     _force_boot_dict = True
 
     def __init__(
         self,
         fget,
-        name = None,
-        doc = None,
-        declarative = None,
-        original_callname = None,
+        name=None,
+        doc=None,
+        declarative=None,
+        original_callname=None,
     ):
         self.fget = fget
         if name is None:
@@ -270,8 +301,8 @@ class MemoizedDescriptorFNoSet(object):
             return self
         result = obj.__dict__.get(self.__name__, _UNIQUE_local)
         if result is _UNIQUE_local:
-            #bd = obj.__boot_dict__
-            bd = getattr(obj, '__boot_dict__', None)
+            # bd = obj.__boot_dict__
+            bd = getattr(obj, "__boot_dict__", None)
             if bd is not None:
                 result = bd.pop(self.__name__, _UNIQUE_local)
                 if not bd:
@@ -281,12 +312,17 @@ class MemoizedDescriptorFNoSet(object):
                     result = self.fget(obj)
                 except TypeError as e:
                     raise_msg_from_property(
-                        ("Property attribute {name} of {orepr} accessed with no initial value. Needs an initial value, or"
-                         "to be declared with a default argument at file:"
-                         "\n{filename}"
-                         "\nline {lineno}."),
-                        AccessError, self, obj, e,
-                        if_from_file = __file__,
+                        (
+                            "Property attribute {name} of {orepr} accessed with no initial value. Needs an initial value, or"
+                            "to be declared with a default argument at file:"
+                            "\n{filename}"
+                            "\nline {lineno}."
+                        ),
+                        AccessError,
+                        self,
+                        obj,
+                        e,
+                        if_from_file=__file__,
                         **try_name_file_line(self.fget)
                     )
                     raise
@@ -297,12 +333,17 @@ class MemoizedDescriptorFNoSet(object):
                     result = self.fget(obj, result)
                 except TypeError as e:
                     raise_msg_from_property(
-                        ("Property attribute {name} of {orepr} accessed with an initial value. Needs no initial value, or"
-                         "to be declared taking an argument at file:"
-                         "\n{filename}"
-                         "\nline {lineno}."),
-                        AccessError, self, obj, e,
-                        if_from_file = __file__,
+                        (
+                            "Property attribute {name} of {orepr} accessed with an initial value. Needs no initial value, or"
+                            "to be declared taking an argument at file:"
+                            "\n{filename}"
+                            "\nline {lineno}."
+                        ),
+                        AccessError,
+                        self,
+                        obj,
+                        e,
+                        if_from_file=__file__,
                         **try_name_file_line(self.fget)
                     )
                     raise
@@ -312,66 +353,49 @@ class MemoizedDescriptorFNoSet(object):
             if __debug__:
                 if result is NOARG:
                     raise InnerException("Return result was NOARG")
-            #obj.__dict__[self.__name__] = result
+            # obj.__dict__[self.__name__] = result
 
             if isinstance(result, PropertyTransforming):
                 result = result.construct(
-                    parent = obj,
-                    name = self.__name__,
+                    parent=obj,
+                    name=self.__name__,
                 )
 
-            #use standard (or overloaded! setter since this will assign to __dict__ by default
-            #when this descriptor object is missing __set__)
+            # use standard (or overloaded! setter since this will assign to __dict__ by default
+            # when this descriptor object is missing __set__)
             setattr(obj, self.__name__, result)
-            #in case the setattr transformed the object
+            # in case the setattr transformed the object
             result = getattr(obj, self.__name__)
         return result
 
 
-def mproperty(
-        __func = None,
-        original_callname = 'mproperty',
-        **kwargs
-):
+def mproperty(__func=None, original_callname="mproperty", **kwargs):
     def wrap(func):
-        desc = MemoizedDescriptor(
-            func,
-            original_callname = original_callname,
-            **kwargs
-        )
+        desc = MemoizedDescriptor(func, original_callname=original_callname, **kwargs)
         return desc
+
     if __func is not None:
         return wrap(__func)
     else:
         return wrap
 
 
-def dproperty(
-        __func = None,
-        declarative = True,
-        original_callname = 'dproperty',
-        **kwargs
-):
+def dproperty(__func=None, declarative=True, original_callname="dproperty", **kwargs):
     return mproperty(
-        __func = __func,
-        declarative = declarative,
-        original_callname = original_callname,
+        __func=__func,
+        declarative=declarative,
+        original_callname=original_callname,
         **kwargs
     )
 
 
-def mproperty_plain(
-        __func = None,
-        original_callname = 'mproperty_plain',
-        **kwargs
-):
+def mproperty_plain(__func=None, original_callname="mproperty_plain", **kwargs):
     def wrap(func):
         desc = MemoizedDescriptorFNoSet(
-            func,
-            original_callname = original_callname,
-            **kwargs
+            func, original_callname=original_callname, **kwargs
         )
         return desc
+
     if __func is not None:
         return wrap(__func)
     else:
@@ -379,15 +403,12 @@ def mproperty_plain(
 
 
 def dproperty_plain(
-        __func = None,
-        declarative = True,
-        original_callname = 'dproperty_plain',
-        **kwargs
+    __func=None, declarative=True, original_callname="dproperty_plain", **kwargs
 ):
     return mproperty_plain(
-        __func = __func,
-        declarative = declarative,
-        original_callname = original_callname,
+        __func=__func,
+        declarative=declarative,
+        original_callname=original_callname,
         **kwargs
     )
 
@@ -442,5 +463,6 @@ class MemoizeFunction(object):
         except KeyError:
             res = cache[key] = self.func(*args, **kw)
         return res
+
 
 mfunction = MemoizeFunction

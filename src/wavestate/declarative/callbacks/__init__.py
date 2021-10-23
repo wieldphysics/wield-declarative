@@ -34,6 +34,3 @@ from .state_booleans import (
     RelayBoolNotAll,
     RelayBoolNotAny,
 )
-
-
-

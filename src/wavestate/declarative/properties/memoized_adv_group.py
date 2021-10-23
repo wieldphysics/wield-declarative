@@ -7,13 +7,10 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-#from builtins import object
+# from builtins import object
 
 
-from ..utilities.unique import (
-    NOARG,
-    unique_generator
-)
+from ..utilities.unique import NOARG, unique_generator
 
 
 from .bases import (
@@ -21,9 +18,7 @@ from .bases import (
     PropertyTransforming,
 )
 
-from .utilities import (
-    raise_attrerror_from_property
-)
+from .utilities import raise_attrerror_from_property
 
 
 _UNIQUE_local = unique_generator()
@@ -36,7 +31,7 @@ class MemoizedGroupDescriptorBase(object):
                 return self
             result = obj.__dict__.get(self.__name__, _UNIQUE_local)
             if result is _UNIQUE_local:
-                bd = getattr(obj, '__boot_dict__', None)
+                bd = getattr(obj, "__boot_dict__", None)
                 if bd is None:
                     bd = {}
                     obj.__boot_dict__ = bd
@@ -51,7 +46,7 @@ class MemoizedGroupDescriptorBase(object):
                         raise
                     storage = obj.__boot_dict__[self.root]
 
-                bd = getattr(obj, '__boot_dict__', None)
+                bd = getattr(obj, "__boot_dict__", None)
                 if bd is not None:
                     result = bd.pop(self.__name__, _UNIQUE_local)
                     if not bd:
@@ -66,17 +61,14 @@ class MemoizedGroupDescriptorBase(object):
                 try:
                     if result is _UNIQUE_local:
                         result = self.func(
-                            obj,
-                            storage = storage,
-                            group = self.root.group,
-                            **kwargs
+                            obj, storage=storage, group=self.root.group, **kwargs
                         )
                     else:
                         result = self.func(
                             obj,
                             result,
-                            storage = storage,
-                            group = self.root.group,
+                            storage=storage,
+                            group=self.root.group,
                             **kwargs
                         )
                 except AttributeError as e:
@@ -88,8 +80,8 @@ class MemoizedGroupDescriptorBase(object):
 
                 if isinstance(result, PropertyTransforming):
                     result = result.construct(
-                        parent = obj,
-                        name = self.__name__,
+                        parent=obj,
+                        name=self.__name__,
                     )
 
                 obj.__dict__[self.__name__] = result
@@ -100,7 +92,7 @@ class MemoizedGroupDescriptorBase(object):
             raise
 
     def __set__(self, obj, value):
-        bd = getattr(obj, '__boot_dict__', None)
+        bd = getattr(obj, "__boot_dict__", None)
         if bd is None:
             bd = {}
             obj.__boot_dict__ = bd
@@ -127,9 +119,9 @@ class MemoizedGroupDescriptorRoot(MemoizedGroupDescriptorBase):
     def __init__(
         self,
         fgenerate,
-        name = None,
-        doc = None,
-        declarative = None,
+        name=None,
+        doc=None,
+        declarative=None,
     ):
         self.registries = dict()
         self.group = dict()
@@ -157,20 +149,20 @@ class MemoizedGroupDescriptorRoot(MemoizedGroupDescriptorBase):
         return
 
     def setup(self, func):
-        #TODO wrap the function call appropriately
+        # TODO wrap the function call appropriately
         self._setup = func
 
     def _setup(self, storage, group, **kwargs):
         return
 
     def default(self, func):
-        #TODO wrap the function call appropriately
+        # TODO wrap the function call appropriately
         self.func = func
 
     def func(self, obj, group, storage, **kwargs):
         return None
-        #raise RuntimeError("Should specify")
-        #return
+        # raise RuntimeError("Should specify")
+        # return
 
     def __generate_virtual_descriptors__(self):
         return self.group
@@ -178,14 +170,7 @@ class MemoizedGroupDescriptorRoot(MemoizedGroupDescriptorBase):
     def name_change(self, name):
         self.__name__ = name
 
-    def mproperty(
-            self,
-            __func      = None,
-            name        = None,
-            stem        = None,
-            declarative = None,
-            **kwargs
-    ):
+    def mproperty(self, __func=None, name=None, stem=None, declarative=None, **kwargs):
         def wrap(func):
             if name is None and stem is None:
                 names = [func.__name__]
@@ -197,7 +182,7 @@ class MemoizedGroupDescriptorRoot(MemoizedGroupDescriptorBase):
                 else:
                     names = []
                 for stem_fmt in self._stems:
-                    names.append(stem.format(stem = stem_fmt, name = name, **kwargs))
+                    names.append(stem.format(stem=stem_fmt, name=name, **kwargs))
             principle_name = names[0]
 
             for k, v in kwargs.items():
@@ -212,40 +197,32 @@ class MemoizedGroupDescriptorRoot(MemoizedGroupDescriptorBase):
                 self.func = func
             else:
                 desc = MemoizedGroupDescriptor(
-                    func        = func,
-                    name        = principle_name,
-                    root        = self.root,
-                    declarative = declarative,
+                    func=func,
+                    name=principle_name,
+                    root=self.root,
+                    declarative=declarative,
                 )
             for usedname in names:
                 self.root.group[usedname] = desc
             return desc
+
         if __func is not None:
             return wrap(__func)
         else:
             return wrap
 
-    def dproperty(
-            self,
-            __func = None,
-            declarative = True,
-            **kwargs
-    ):
-        return self.mproperty(
-            __func,
-            declarative = declarative,
-            **kwargs
-        )
+    def dproperty(self, __func=None, declarative=True, **kwargs):
+        return self.mproperty(__func, declarative=declarative, **kwargs)
 
     def _build(self, obj, cls):
-        bd = getattr(obj, '__boot_dict__', None)
+        bd = getattr(obj, "__boot_dict__", None)
         if bd is None:
             bd = {}
             obj.__boot_dict__ = bd
         result = bd.get(self, _UNIQUE_local)
         if result is _UNIQUE_local:
-            #bd = obj.__boot_dict__
-            bd = getattr(obj, '__boot_dict__', None)
+            # bd = obj.__boot_dict__
+            bd = getattr(obj, "__boot_dict__", None)
             if bd is not None:
                 sources = bd.pop(self.__name__, _UNIQUE_local)
             else:
@@ -254,15 +231,12 @@ class MemoizedGroupDescriptorRoot(MemoizedGroupDescriptorBase):
             if sources is _UNIQUE_local:
                 sources = dict()
 
-            #the method should modify the sources values if it needs
+            # the method should modify the sources values if it needs
             result = self._setup(
-                obj,
-                sources = sources,
-                group = self.group,
-                **self.registries
+                obj, sources=sources, group=self.group, **self.registries
             )
 
-            #inject the values into the boot_dict
+            # inject the values into the boot_dict
             if bd is None:
                 bd = dict()
                 obj.__boot_dict__ = bd
@@ -275,11 +249,11 @@ class MemoizedGroupDescriptorRoot(MemoizedGroupDescriptorBase):
 
             if isinstance(result, PropertyTransforming):
                 result = result.construct(
-                    parent = obj,
-                    name = self.__name__,
+                    parent=obj,
+                    name=self.__name__,
                 )
 
-            bd = getattr(obj, '__boot_dict__', None)
+            bd = getattr(obj, "__boot_dict__", None)
             if bd is None:
                 bd = {}
                 obj.__boot_dict__ = bd
@@ -292,15 +266,16 @@ class MemoizedGroupDescriptor(MemoizedGroupDescriptorBase):
     wraps a member function just as :obj:`property` but saves its value after evaluation
     (and is thus only evaluated once)
     """
+
     _declarative_instantiation = False
 
     def __init__(
         self,
         func,
         root,
-        name = None,
-        doc = None,
-        declarative = None,
+        name=None,
+        doc=None,
+        declarative=None,
     ):
         self.root = root
         self.func = func
@@ -320,31 +295,20 @@ class MemoizedGroupDescriptor(MemoizedGroupDescriptorBase):
         return
 
 
-def mproperty_adv_group(
-        __func = None,
-        **kwargs
-):
+def mproperty_adv_group(__func=None, **kwargs):
     def wrap(func):
-        desc = MemoizedGroupDescriptorRoot(
-            func, **kwargs
-        )
+        desc = MemoizedGroupDescriptorRoot(func, **kwargs)
         return desc
+
     if __func is not None:
         return wrap(__func)
     else:
         return wrap
 
 
-def dproperty_adv_group(
-        __func = None,
-        declarative = True,
-        **kwargs
-):
-    return mproperty_adv_group(
-        __func = __func,
-        declarative = declarative,
-        **kwargs
-    )
+def dproperty_adv_group(__func=None, declarative=True, **kwargs):
+    return mproperty_adv_group(__func=__func, declarative=declarative, **kwargs)
+
 
 group_dproperty = dproperty_adv_group
 group_mproperty = mproperty_adv_group

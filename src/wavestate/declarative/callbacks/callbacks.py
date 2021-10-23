@@ -9,7 +9,8 @@
 """
 import functools
 import threading
-#from builtins import object
+
+# from builtins import object
 
 callback_lock = threading.Lock()
 
@@ -26,14 +27,15 @@ class Callback(object):
     .. automethod:: register
 
     """
+
     __slots__ = (
-        'initialcall',
-        'callbacks',
-        '_callbacks_edit',
-        '_callbacks_editting',
+        "initialcall",
+        "callbacks",
+        "_callbacks_edit",
+        "_callbacks_editting",
     )
 
-    def __init__(self, initialcall = None, doc = None):
+    def __init__(self, initialcall=None, doc=None):
         self.initialcall = initialcall
         self.callbacks = {}
         self._callbacks_edit = self.callbacks
@@ -43,18 +45,12 @@ class Callback(object):
             self.__doc__ = doc
         else:
             if initialcall is not None:
-                #TODO: Find why this is broken
-                #self.__doc__ = initialcall.__doc__
+                # TODO: Find why this is broken
+                # self.__doc__ = initialcall.__doc__
                 pass
         return
 
-    def register(
-        self,
-        key      = None,
-        callback = None,
-        remove   = False,
-        throw    = False
-    ):
+    def register(self, key=None, callback=None, remove=False, throw=False):
         """
         Register a function into the callback
 
@@ -68,11 +64,10 @@ class Callback(object):
         if key is None:
             raise RuntimeError("Key or callback must be specified")
         with callback_lock:
-            if (
-                (self._callbacks_editting > 0) and
-                (self._callbacks_editting is self.callbacks)
+            if (self._callbacks_editting > 0) and (
+                self._callbacks_editting is self.callbacks
             ):
-                #make a copy to edit on
+                # make a copy to edit on
                 self._callbacks_edit = dict(self.callbacks)
             if not remove:
                 if key in self._callbacks_edit:
@@ -125,10 +120,8 @@ class callbackmethod(object):
     def __get__(self, obj, cls):
         if obj is None:
             return self
-        callback = Callback(
-            initialcall = functools.partial(self.fget, obj)
-        )
-        #obj.__dict__[self.__name__] = callback
+        callback = Callback(initialcall=functools.partial(self.fget, obj))
+        # obj.__dict__[self.__name__] = callback
         setattr(obj, self.__name__, callback)
         return callback
 
@@ -160,8 +153,8 @@ class callbackstaticmethod(object):
     def __get__(self, obj, cls):
         if obj is None:
             return self
-        callback = Callback(initialcall = self.fget)
-        #obj.__dict__[self.__name__] = callback
+        callback = Callback(initialcall=self.fget)
+        # obj.__dict__[self.__name__] = callback
         setattr(obj, self.__name__, callback)
         return callback
 
@@ -178,10 +171,11 @@ class SingleCallback(object):
 
     .. automethod:: register
     """
-    __slots__ = ('callback', 'default')
 
-    def __init__(self, default = None, doc = None):
-        #class sets the callback originally
+    __slots__ = ("callback", "default")
+
+    def __init__(self, default=None, doc=None):
+        # class sets the callback originally
         self.default = default
         self.callback = default
 
@@ -192,7 +186,7 @@ class SingleCallback(object):
                 self.__doc__ = default.__doc__
         return
 
-    def register(self, callback, remove = False):
+    def register(self, callback, remove=False):
         """
         Register the function into the callback
 
@@ -203,11 +197,15 @@ class SingleCallback(object):
         """
         if not remove:
             if self.callback is not self.default:
-                raise RuntimeError('Single Callbacks may not be registered while they contain a callback')
+                raise RuntimeError(
+                    "Single Callbacks may not be registered while they contain a callback"
+                )
             self.callback = callback
         else:
             if self.callback is self.default:
-                raise RuntimeError('Single Callbacks must be registered when unregister is called')
+                raise RuntimeError(
+                    "Single Callbacks must be registered when unregister is called"
+                )
             self.callback = self.default
         return
 
@@ -241,9 +239,7 @@ class singlecallbackmethod(object):
     def __get__(self, obj, cls):
         if obj is None:
             return self
-        callback = Callback(default = functools.partial(self.fget, obj))
-        #obj.__dict__[self.__name__] = callback
+        callback = Callback(default=functools.partial(self.fget, obj))
+        # obj.__dict__[self.__name__] = callback
         setattr(obj, self.__name__, callback)
         return callback
-
-

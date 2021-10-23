@@ -6,9 +6,9 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-#from builtins import object
+# from builtins import object
 
-from wavestate.declarative.callbacks import (Callback, callbackmethod)
+from wavestate.declarative.callbacks import Callback, callbackmethod
 
 from wavestate.declarative import (
     OverridableObject,
@@ -19,6 +19,8 @@ from wavestate.declarative import (
 
 oldprint = print
 print_test_list = []
+
+
 def print(*args):
     oldprint(*args)
     if len(args) == 1:
@@ -30,20 +32,19 @@ def print(*args):
 def message(message):
     print(message)
 
-class TCallback(object):
 
+class TCallback(object):
     def __init__(self):
         self.callback = Callback()
 
     @callbackmethod
     def callbackmethod(self, message):
-        print(('callbackmethod', message))
+        print(("callbackmethod", message))
+
 
 T = TCallback()
-T.callback.register(callback = print, key = print)
-T.callbackmethod.register(callback = message, key = message)
+T.callback.register(callback=print, key=print)
+T.callbackmethod.register(callback=message, key=message)
 
-T.callback('hello')
-T.callbackmethod('world')
-
-
+T.callback("hello")
+T.callbackmethod("world")
