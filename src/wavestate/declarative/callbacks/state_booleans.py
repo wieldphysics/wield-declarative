@@ -23,12 +23,6 @@ class RelayBoolBase(ReprMixin):
     Base class for the relay bools and their interfaces.
 
     All subclasses should implement :obj:`__nonzero__`
-
-    .. automethod:: __init__
-
-    .. automethod:: register
-
-    .. autoattribute:: is_set
     """
 
     __slots__ = ("callbacks_ontoggle", "_assign_protect")
@@ -123,12 +117,6 @@ class RelayBoolBase(ReprMixin):
 class RelayBool(RelayBoolBase):
     """
     This is a raw Relay Bool value, explicitely settable
-
-    .. automethod:: __init__
-
-    .. automethod:: assign
-
-    .. automethod:: toggle
     """
 
     __slots__ = ("state",)
@@ -254,10 +242,6 @@ class RelayBool(RelayBoolBase):
 class RelayBoolNot(RelayBoolBase):
     """
     Is true iff state_label's state is the state given
-
-    .. automethod:: __init__
-
-    .. automethod:: register
     """
 
     __slots__ = ("sub_bool",)
@@ -335,12 +319,6 @@ class RelayBoolGate(RelayBoolBase, ReprMixin):
     Base class to implement the logic needed for syncronous action of logic gates of RelayBools.
 
     These gates are all based on monitoring sub-bools using a count. Subclasses set the values of
-
-    .. attribute:: _input_not
-
-    .. attribute:: _output_not
-
-    .. automethod:: register
     """
 
     __slots__ = ("monitored_bools_count", "monitored_bools")

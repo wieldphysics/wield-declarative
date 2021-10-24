@@ -6,9 +6,6 @@
 # NOTICE: authors should document their contributions in concisely in NOTICE
 # with details inline in source files, comments, and docstrings.
 """
-.. autoclass:: ReprMixin
-
-.. autofunction:: bool_string_interpret
 """
 from .super_base import SuperBase
 

@@ -23,9 +23,6 @@ class Callback(object):
     :param doc: (optional) can override the docstring for this object.
 
     This object provides functions transparently as extendable callback hooks.
-
-    .. automethod:: register
-
     """
 
     __slots__ = (
