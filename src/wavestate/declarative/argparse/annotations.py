@@ -8,9 +8,11 @@
 """
 """
 
-from .. import Bunch, NOARG
+# TODO, remove the reliance on bunch?
+from wavestate.bunch import Bunch
 
-from .oo_argparse import types
+from .. import NOARG
+from .oo_argparse import TYPES
 
 
 def store_true(*args, **kwargs):
@@ -70,7 +72,7 @@ def argument(
             return g
 
         func._argparse = Bunch(
-            type=types.argument,
+            type=TYPES['argument'],
             name=_name,
             name_inject=func.__name__,
             func=gen_argument,
@@ -121,7 +123,7 @@ def group(
             return g
 
         func._argparse = Bunch(
-            type=types.group,
+            type=types['group'],
             name=_name,
             func=gen_group,
             group=group,
@@ -148,7 +150,7 @@ def command(
         else:
             _description = description
         func._argparse = Bunch(
-            type=types.command,
+            type=TYPES['command'],
             cmd_name=_name,
             description=_description,
             run_name=func.__name__,

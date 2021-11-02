@@ -13,13 +13,12 @@ import sys
 import argparse
 import collections
 
-from ..bunch import Bunch
 from ..overridable_object import OverridableObject
 from ..utilities import SuperBase, NOARG
 from ..properties import mproperty
 
 
-types = Bunch(
+TYPES = dict(
     command="command",
     group="group",
     argument="argument",
@@ -48,13 +47,13 @@ class OOArgParse(
             attr_obj = getattr(cls, attr_name)
             arganno = getattr(attr_obj, "_argparse", None)
             if arganno:
-                if arganno.type == types.argument:
+                if arganno.type == TYPES['argument']:
                     # mask the argument if it was specified in an extra kwarg
                     if attr_name not in exkwargs:
                         arguments[attr_name] = arganno
-                elif arganno.type == types.group:
+                elif arganno.type == TYPES['group']:
                     groups[attr_name] = arganno
-                elif arganno.type == types.command:
+                elif arganno.type == TYPES['command']:
                     commands[attr_name] = arganno
 
         description = getattr(cls, "__arg_desc__", cls.__doc__)
