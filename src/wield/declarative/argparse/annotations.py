@@ -9,7 +9,7 @@
 """
 
 # TODO, remove the reliance on bunch?
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 from .. import NOARG
 from .oo_argparse import TYPES

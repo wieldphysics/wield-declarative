@@ -8,9 +8,9 @@
 """
 # from builtins import object
 
-from wavestate.declarative.callbacks import Callback, callbackmethod
+from wield.declarative.callbacks import Callback, callbackmethod
 
-from wavestate.declarative import (
+from wield.declarative import (
     OverridableObject,
     mproperty,
     NOARG,
