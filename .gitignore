@@ -27,3 +27,4 @@ debian
 .*.swp
 .#*
 
+test_results
