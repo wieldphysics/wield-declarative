@@ -29,3 +29,20 @@ The code uses python gwinc, wield.model, and Finesse and for its noise and inter
     tests
 
 :ref:`gquest_design_big_index`
+
+
+Testing doc stuff:
+
+find :py:func:`~wield.declarative.properties.memoized.dproperty`
+find :py:func:`~.memoized.dproperty`
+find :py:func:`wield.*.dproperty`
+
+.. attribute:: dproperty
+
+   alias to :py:func:`wield.declarative.properties.memoized.dproperty`
+   
+Aliases:
+--------
+
+- ``dproperty`` **-** :py:func:`wield.declarative.properties.memoized.dproperty`
+   

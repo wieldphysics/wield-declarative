@@ -7,6 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
+
 from .properties import (
     HasDeclaritiveAttributes,
     mproperty,
@@ -25,6 +26,10 @@ from .properties import (
     mproperty_adv_group,
     dproperty_adv_group,
 )
+
+# a test of the documentation
+from .properties import dproperty as dproperty_renamed
+from os.path import split
 
 from .callbacks import (
     callbackmethod,
